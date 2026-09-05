@@ -1,6 +1,11 @@
 #!/usr/bin/env bash
+# Re-applies the config. Run this after every change.
 set -euo pipefail
 DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd -P)"
-ln -sfn "$DIR" ~/.dotfiles
-# No sudo: standalone home-manager only ever writes inside your home directory.
-exec home-manager switch -b backup --flake ~/.dotfiles#"$(whoami)"
+ln -sfn "$DIR" "$HOME/.dotfiles"
+
+HOST="$(hostname)"
+
+# --flake takes an absolute path deliberately: `sudo` would expand ~ to root's
+# home, not yours.
+exec sudo nixos-rebuild switch --flake "$HOME/.dotfiles#$HOST"
